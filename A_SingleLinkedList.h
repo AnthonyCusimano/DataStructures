@@ -9,11 +9,11 @@ public:
 
 	/**
 	Default constructor
-	initializes start, end, and listSize to 0
+	initializes front, back, and listSize to 0
 	*/
 	A_SingleLinkedList() {
 
-		this->start = this->end = 0;
+		this->front = this->back = 0;
 
 		this->listSize = 0;
 
@@ -52,11 +52,11 @@ public:
 	/**
 	returns a constant pointer to the first pointer in this list
 	*/
-	const Tmplt* getStart() {
+	const Tmplt* getfront() {
 
-		//if the list is not empty, it's fine to return the start
+		//if the list is not empty, it's fine to return the front
 		if (this->listSize > 0)
-			return this->start;
+			return this->front;
 
 		//if the list is currently empty, return 0
 		return 0;
@@ -66,10 +66,10 @@ public:
 	/**
 	returns a constant pointer to the last pointer in this list
 	*/
-	const Tmplt* getEnd() {
+	const Tmplt* getback() {
 
 		if (this->listSize > 0)
-			return this->end;
+			return this->back;
 
 		//if the list is currently empty, return 0
 		return 0;
@@ -81,14 +81,138 @@ public:
 	*/
 	void PushFront(Tmplt& const _newNode) {
 
-		//if this is empty, this should be a new node which is both the start and the end of this list
+		//the new front of the list
+		Node *T_NewFront = new Node(_newNode);
+
+		//if this is empty, this should be a new node which is both the front and the back of this list
 		if (this->listSize == 0) {
 
-
+			this->front = this->back = T_NewFront;
 
 		}
 
-		//if not, place the new node at the new start of the list, and have it pointing to the former start
+		//if not, place the new node at the new front of the list, and have it pointing to the former front
+		else {
+
+			T_NewFront->nextNode = this->front;
+			*this->front = T_NewFront;
+
+		}
+
+		//list got bigger
+		++this->listSize;
+
+		//test this
+		//meant to avoid memory leak
+		delete T_NewFront;
+
+	}
+
+	/**
+	pushes this data into a new node, located at the back of the list
+	*/
+	void PushBack(Tmplt& const _newNode) {
+
+		//the new front of the list
+		Node *T_NewBack = new Node(_newNode);
+
+		//if this is empty, this should be a new node which is both the front and the back of this list
+		if (this->listSize == 0) {
+
+			this->back = this->front = T_NewFront;
+
+		}
+		
+		//if not, place the new node at the new back of the list, and have the former back pointing to it
+		else {
+
+			this->back->nextNode = T_NewBack;
+			this->back = T_NewBack;
+
+		}
+
+		//list got bigger
+		++this->listSize;
+
+		//test this
+		//meant to avoid memory leak
+		delete T_NewFront;
+
+	}
+
+	/**
+	used to remove the front most element from this list
+	DO NOT check for an empty list before calling this method, it accounts for size 0
+	*/
+	void PopFront() {
+		//if the list is not empty
+		if (this->listSize > 0) {
+
+			//if this list only has one element to begin with remove it
+			//by making both front and back null
+			if (this->front == this->back) {
+
+				this->front = this->back = 0;
+
+			}
+
+			//this will fire if the list size is greater than 1
+			else {
+
+				//temporary pointer to hold the position of the old head of the list
+				Node *T_OldHead = this->head;
+
+				//moving the list's head pointer to it's new head
+				this->head = this->head->nextNode;
+
+				//deleting the pointer to the value to the old head of the list
+				delete T_OldHead;
+
+			}
+
+			//either way, decrement the size of the list
+			--this->listSize;
+
+		}
+
+	}
+
+	/**
+	used to remove the back most element from this list
+	DO NOT check for an empty list before calling this method, it accounts for size 0
+	*/
+	void PopBack() {
+		//if the list is not empty
+		if (this->listSize > 0) {
+
+			//if the list only has one element to begin with remove it
+			//by making both the front and back null
+			if (this->front == this->back) {
+
+				this->front = this->back = 0;
+
+			}
+
+			//this will fire if the list size is greater than 1
+			else {
+
+				//holding the address of the old back of the list
+				Node T_OldBack = this->back;
+				//going to use our back pointer to traverse the list, to the node before it's old value
+				this->back = this->head;
+				while (this->back->nextNode != T_OldBack) 
+					this->back = this->back->nextNode;
+
+				//the new back is found, temp must be deleted
+				delete T_OldBack;
+				
+
+			}
+
+			//either way, decrement the size of the list
+			--this->listSize;
+
+		}
 
 	}
 
@@ -104,7 +228,7 @@ private:
 			//assign this the _data passed
 			myData = _data;
 
-			//for now, assume this is the end of the LinkedList
+			//for now, assume this is the back of the LinkedList
 			this->nextNode = 0;
 
 		}
@@ -119,7 +243,7 @@ private:
 	};//END OF Node
 
 	// pointers to first and last nodes in the list
-	Node *start, *end;
+	Node *front, *back;
 
 	//the number of elements in this list
 	int listSize;
