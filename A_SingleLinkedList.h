@@ -5,7 +5,56 @@ template <typename Tmplt>
 
 class A_SingleLinkedList {
 
+private:
+
+	//nodes within the list
+	//nested class to discourage making (a) node(s) outside of a LinkedList
+	struct Node {
+
+		//constructor
+		Node(Tmplt* const _data) {
+
+			//assign this the _data passed
+			myData = _data;
+
+			//for now, assume this is the back of the LinkedList
+			this->nextNode = 0;
+
+		}
+
+		//data contained within the node
+		Tmplt myData;
+
+		//the next node in the list
+		Node* nextNode;
+
+
+	};//END OF Node
+
+	  // pointers to first and last nodes in the list
+	Node *front, *back;
+
+	//the number of elements in this list
+	int listSize;
+
 public:
+
+	//public iterator class for our single linked list
+	class A_SingleLinkedListIterator {
+
+	private:
+
+		//A_SingleLinkedList declared as friend to avoid wasting time accessing iterator objects
+		//seen as benificial since iterator is essentially a helper class for A_SingleLinkedList
+		friend class A_SingleLinkedList;
+
+		Node *node;
+
+	public:
+
+
+
+	};//end of A_SingleLinkedListIterator
 
 	/**
 	Default constructor
@@ -215,38 +264,6 @@ public:
 		}
 
 	}
-
-private:
-
-	//nodes within the list
-	//nested class to discourage making (a) node(s) outside of a LinkedList
-	struct Node {
-
-		//constructor
-		Node(Tmplt* const _data) {
-
-			//assign this the _data passed
-			myData = _data;
-
-			//for now, assume this is the back of the LinkedList
-			this->nextNode = 0;
-
-		}
-
-		//data contained within the node
-		Tmplt myData;
-
-		//the next node in the list
-		Node* nextNode;
-
-
-	};//END OF Node
-
-	// pointers to first and last nodes in the list
-	Node *front, *back;
-
-	//the number of elements in this list
-	int listSize;
 
 };
 
