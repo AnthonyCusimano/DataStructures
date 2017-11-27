@@ -5,7 +5,166 @@ template <typename Tmplt>
 
 class A_SingleLinkedList {
 
+private:
+
+	//nodes within the list
+	//nested class to discourage making (a) node(s) outside of a LinkedList
+	struct A_SingleLinkedList_Node {
+
+		//constructor
+		A_SingleLinkedList_Node(Tmplt* const _data) {
+
+			//assign this the _data passed
+			myData = _data;
+
+			//for now, assume this is the back of the LinkedList
+			this->nextNode = 0;
+
+		}
+
+		//data contained within the node
+		Tmplt myData;
+
+		//the next node in the list
+		A_SingleLinkedList_Node* nextNode;
+
+
+	};//END OF Node
+
+	  // pointers to first and last nodes in the list
+	A_SingleLinkedList_Node *front, *back;
+
+	//the number of elements in this list
+	int listSize;
+
 public:
+
+	//public iterator class for our single linked list
+	class A_SingleLinkedList_Iterator {
+
+	private:
+
+		//A_SingleLinkedList declared as friend to avoid wasting time accessing iterator objects
+		//seen as benificial since iterator is essentially a helper class for A_SingleLinkedList
+		friend class A_SingleLinkedList;
+
+		A_SingleLinkedList_Node *node;
+
+	public:
+
+		/**
+		default constructor must be given a node to refrence to begin with
+		*/
+		A_SingleLinkedList_Iterator(A_SingleLinkedList_Node* const _node) {
+
+			this->node = _node;
+
+		}
+
+		/**
+		destructor
+		*/
+		~A_SingleLinkedList_Iterator() {
+
+			//=D
+
+		}
+
+		/**
+		returns this iterator's node
+		*/
+		/*const A_SingleLinkedList_Node* getMyNode() {
+
+			return this->node;
+
+		}*/
+
+		/**
+		equality operator for checking if two iterators are pointing
+		to the same position
+		*/
+		const bool operator ==(A_SingleLinkedList_Iterator* const _oi) {
+
+			return this->node == _oi->node;
+
+		}
+
+		/**
+		inequality operator for checking if two iterators are pointing
+		to different positions
+		*/
+		const bool operator !=(A_SingleLinkedList_Iterator* const _oi) {
+
+			return this->node != _oi->node;
+
+		}
+
+		/**
+		cycles to the next node in the list
+		*/
+		const A_SingleLinkedList_Iterator* operator ++() {
+
+			this->node = this->node->nextNode;
+
+			return this;
+
+		}
+
+		/**
+		sets this iterator to the back node of _list
+		*/
+		const A_SingleLinkedList_Iterator* toBack(A_SingleLinkedList* const _list) {
+
+			this->node = _list->back;
+			//TODO
+			//requires test
+			return this;
+
+		}
+
+		/**
+		sets this iterator to the front node of _list
+		*/
+		const A_SingleLinkedList_Iterator* toFront(A_SingleLinkedList* const _list) {
+
+			this->node = _list->front;
+			//TODO
+			//requires test
+			return this;
+
+		}
+
+		/**
+		removes the node at _target
+		normal use is pass this as _pos
+		*/
+		const A_SingleLinkedList_Iterator* Erase(A_SingleLinkedList_Iterator* _pos, A_SingleLinkedList_Node* _target) {
+
+			//if the target is the front of the list, simply pop front
+			if (_pos->node == front)
+				popFront;
+
+			//likewise if it's the back of the list, simply pop back
+			else if (_pos->node == back)
+				popBack;
+
+			//any other case requires a bit more effort
+			else {
+
+				//iterate until we find the target
+				while (_pos->node.nextNode != _target) ++_pos;
+
+				//link _pos to _target's next node, not _target
+				_pos->node->nextNode = _target->next;
+				//now we can safely delete target
+				_target = 0;
+				delete _target;
+
+			}
+
+		}
+
+	};//end of A_SingleLinkedListIterator
 
 	/**
 	Default constructor
@@ -20,11 +179,11 @@ public:
 	}
 
 	/**
-	destructor calls the Clear method
+	destructor mirrors the Clear method
 	*/
 	~A_SingleLinkedList() {
 
-		// =D
+		this->Clear(this->front);
 
 	}
 
@@ -82,7 +241,7 @@ public:
 	void PushFront(Tmplt& const _newNode) {
 
 		//the new front of the list
-		Node *T_NewFront = new Node(_newNode);
+		A_SingleLinkedList_Node *T_NewFront = new A_SingleLinkedList_Node(_newNode);
 
 		//if this is empty, this should be a new node which is both the front and the back of this list
 		if (this->listSize == 0) {
@@ -114,7 +273,7 @@ public:
 	void PushBack(Tmplt& const _newNode) {
 
 		//the new front of the list
-		Node *T_NewBack = new Node(_newNode);
+		A_SingleLinkedList_Node *T_NewBack = new A_SingleLinkedList_Node(_newNode);
 
 		//if this is empty, this should be a new node which is both the front and the back of this list
 		if (this->listSize == 0) {
@@ -197,7 +356,7 @@ public:
 			else {
 
 				//holding the address of the old back of the list
-				Node T_OldBack = this->back;
+				A_SingleLinkedList_Node T_OldBack = this->back;
 				//going to use our back pointer to traverse the list, to the node before it's old value
 				this->back = this->head;
 				while (this->back->nextNode != T_OldBack) 
@@ -216,37 +375,26 @@ public:
 
 	}
 
-private:
+	/**
+	recersive function to delete this list's contents
+	pass the front node of this list
+	*/
+	void Clear(A_SingleLinkedList_Node* _front) {
 
-	//nodes within the list
-	//nested class to discourage making (a) node(s) outside of a LinkedList
-	struct Node {
+		//if this list has ANY nodes
+		if (_front) {
 
-		//constructor
-		Node(Tmplt* const _data) {
-
-			//assign this the _data passed
-			myData = _data;
-
-			//for now, assume this is the back of the LinkedList
-			this->nextNode = 0;
+			//call this function on the next node in the array
+			this->Clear(_front->nextNode);
+			//delete each pointer
+			//recursion will cause each of these to resolve off the stack from back to front 
+			//and exit this method after removing _front itself
+			delete _front;
+			_front = 0;
 
 		}
 
-		//data contained within the node
-		Tmplt myData;
-
-		//the next node in the list
-		Node* nextNode;
-
-
-	};//END OF Node
-
-	// pointers to first and last nodes in the list
-	Node *front, *back;
-
-	//the number of elements in this list
-	int listSize;
+	}
 
 };
 
