@@ -67,11 +67,11 @@ public:
 		/**
 		constructor given a node to refrence to begin with
 		*/
-		A_SingleLinkedList_Iterator(A_SingleLinkedList_Node* const _node) {
+		/*A_SingleLinkedList_Iterator(A_SingleLinkedList_Node* const _node) {
 
 			this->node = _node;
 
-		}
+		}*/
 
 		/**
 		destructor
@@ -79,6 +79,7 @@ public:
 		~A_SingleLinkedList_Iterator() {
 
 			//=D
+			//call Clear?
 
 		}
 
@@ -113,6 +114,7 @@ public:
 
 		/**
 		cycles to the next node in the list
+		SEE ALSO: GetNext
 		*/
 		const A_SingleLinkedList_Iterator* operator ++() {
 
@@ -142,6 +144,14 @@ public:
 			this->node = _list->front;
 			//TODO
 			//requires test
+			return this;
+
+		}
+
+		const A_SingleLinkedList_Iterator* getNext() {
+
+			this->node = this->node->nextNode;
+
 			return this;
 
 		}
@@ -240,11 +250,11 @@ public:
 	/**
 	returns a constant pointer to the first pointer in this list
 	*/
-	const Tmplt* getfront() {
+	const Tmplt& getFront() {
 
 		//if the list is not empty, it's fine to return the front
 		if (this->listSize > 0)
-			return &this->front->myData;
+			return this->front->myData;
 
 		//if the list is currently empty, return 0
 		return 0;
@@ -254,10 +264,10 @@ public:
 	/**
 	returns a constant pointer to the last pointer in this list
 	*/
-	const Tmplt* getback() {
+	const Tmplt& getBack() {
 
 		if (this->listSize > 0)
-			return this->back;
+			return this->back->myData;
 
 		//if the list is currently empty, return 0
 		return 0;
@@ -414,8 +424,12 @@ public:
 	*/
 	void Clear(A_SingleLinkedList_Node* _front) {
 
+		std::cout << "in clear\n";
+
 		//if this list has ANY nodes
 		if (_front) {
+
+			std::cout << "Still clearing\n";
 
 			//call this function on the next node in the array
 			this->Clear(_front->nextNode);
