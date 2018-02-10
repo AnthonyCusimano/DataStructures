@@ -347,12 +347,16 @@ public:
 	DO NOT check for an empty list before calling this method, it accounts for size 0
 	*/
 	void PopFront() {
+		std::cout << "In PopFront()\n";
 		//if the list is not empty
 		if (this->listSize > 0) {
+			std::cout << "List isn't empty\n";
 
 			//if this list only has one element to begin with remove it
 			//by making both front and back null
 			if (this->front == this->back) {
+
+				std::cout << "apparently this list is size 1\n";
 
 				this->front = this->back = 0;
 
@@ -362,10 +366,10 @@ public:
 			else {
 
 				//temporary pointer to hold the position of the old head of the list
-				Node *T_OldHead = this->head;
+				A_SingleLinkedList::A_SingleLinkedList_Node *T_OldHead = this->front;
 
 				//moving the list's head pointer to it's new head
-				this->head = this->head->nextNode;
+				this->front = this->front->nextNode;
 
 				//deleting the pointer to the value to the old head of the list
 				delete T_OldHead;
@@ -399,9 +403,9 @@ public:
 			else {
 
 				//holding the address of the old back of the list
-				A_SingleLinkedList_Node T_OldBack = this->back;
+				A_SingleLinkedList::A_SingleLinkedList_Node T_OldBack = this->back;
 				//going to use our back pointer to traverse the list, to the node before it's old value
-				this->back = this->head;
+				this->back = this->front;
 				while (this->back->nextNode != T_OldBack) 
 					this->back = this->back->nextNode;
 
@@ -429,7 +433,7 @@ public:
 		//if this list has ANY nodes
 		if (_front) {
 
-			std::cout << "Still clearing\n";
+			std::cout << "actually deleting\n";
 
 			//call this function on the next node in the array
 			this->Clear(_front->nextNode);
