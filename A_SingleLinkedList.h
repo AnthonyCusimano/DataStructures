@@ -3,6 +3,17 @@
 
 #include <iostream>
 
+
+/**********************
+***********************
+UPLOAD TO GITHUB
+
+you fixed PopBack lol it was that you weren't initializing old back as a pointer, get shit on kid
+
+***********************
+***********************
+*/
+
 template <typename Tmplt>
 
 class A_SingleLinkedList {
@@ -403,7 +414,7 @@ public:
 			else {
 
 				//holding the address of the old back of the list
-				A_SingleLinkedList::A_SingleLinkedList_Node T_OldBack = this->back;
+				A_SingleLinkedList::A_SingleLinkedList_Node *T_OldBack = this->back;
 				//going to use our back pointer to traverse the list, to the node before it's old value
 				this->back = this->front;
 				while (this->back->nextNode != T_OldBack) 
