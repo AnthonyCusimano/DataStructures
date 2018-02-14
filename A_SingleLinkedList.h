@@ -206,7 +206,7 @@ public:
 			//start at the front of this list
 			this->node = front;
 
-			while (this->node->nextNode.data != _value /**this null check may be incorrect*/&& this->node->nextNode != 0)
+			while (this->node->nextNode.data != _value /**TODOthis null check may be incorrect*/&& this->node->nextNode != 0)
 				++this->node;
 
 			//at the end of the while loop, we either went to the end of the list
@@ -229,18 +229,9 @@ public:
 	}
 
 	/**
-	destructor mirrors the Clear method
-	*/
-	~A_SingleLinkedList() {
-
-		this->Clear(this->front);
-
-	}
-
-	/**
 	returns true if the list is not empty
 	*/
-	bool IsEmpty() {
+	const bool IsEmpty() {
 
 		if (this->listSize == 0) return true;
 
@@ -439,22 +430,25 @@ public:
 	*/
 	void Clear(A_SingleLinkedList_Node* _front) {
 
-		std::cout << "in clear\n";
-
-		//if this list has ANY nodes
-		if (_front) {
-
-			std::cout << "actually deleting\n";
-
-			//call this function on the next node in the array
+		//call this function on the next node in the array
+		//until you've found the back
+		if (_front != this->back)
 			this->Clear(_front->nextNode);
-			//delete each pointer
-			//recursion will cause each of these to resolve off the stack from back to front 
-			//and exit this method after removing _front itself
-			delete _front;
-			_front = 0;
 
-		}
+		//delete each pointer
+		//recursion will cause each of these to resolve off the stack from back to front 
+		//and exit this method after removing _front itself
+		delete _front;
+		_front = 0;
+
+	}
+
+	/**
+	destructor mirrors the Clear method
+	*/
+	~A_SingleLinkedList() {
+
+		this->Clear(this->front);
 
 	}
 
