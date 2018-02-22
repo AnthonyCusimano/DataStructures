@@ -3,17 +3,6 @@
 
 #include <iostream>
 
-
-/**********************
-***********************
-UPLOAD TO GITHUB
-
-you fixed PopBack lol it was that you weren't initializing old back as a pointer, get shit on kid
-
-***********************
-***********************
-*/
-
 template <typename Tmplt>
 
 class A_SingleLinkedList {
