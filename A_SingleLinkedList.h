@@ -79,7 +79,6 @@ public:
 		~A_SingleLinkedList_Iterator() {
 
 			//=D
-			//call Clear?
 
 		}
 
@@ -195,7 +194,7 @@ public:
 			//start at the front of this list
 			this->node = front;
 
-			while (this->node->nextNode.data != _value /**TODOthis null check may be incorrect*/&& this->node->nextNode != 0)
+			while (this->node->nextNode.data != _value /**this null check may be incorrect*/&& this->node->nextNode != 0)
 				++this->node;
 
 			//at the end of the while loop, we either went to the end of the list
@@ -218,9 +217,18 @@ public:
 	}
 
 	/**
+	destructor mirrors the Clear method
+	*/
+	~A_SingleLinkedList() {
+
+		this->Clear(this->front);
+
+	}
+
+	/**
 	returns true if the list is not empty
 	*/
-	const bool IsEmpty() {
+	bool IsEmpty() {
 
 		if (this->listSize == 0) return true;
 
@@ -241,11 +249,11 @@ public:
 	/**
 	returns a constant pointer to the first pointer in this list
 	*/
-	const Tmplt& getFront() {
+	const Tmplt* getFront() {
 
 		//if the list is not empty, it's fine to return the front
 		if (this->listSize > 0)
-			return this->front->myData;
+			return &this->front->myData;
 
 		//if the list is currently empty, return 0
 		return 0;
@@ -255,10 +263,10 @@ public:
 	/**
 	returns a constant pointer to the last pointer in this list
 	*/
-	const Tmplt& getBack() {
+	const Tmplt* getBack() {
 
 		if (this->listSize > 0)
-			return this->back->myData;
+			return this->back;
 
 		//if the list is currently empty, return 0
 		return 0;
@@ -338,16 +346,12 @@ public:
 	DO NOT check for an empty list before calling this method, it accounts for size 0
 	*/
 	void PopFront() {
-		std::cout << "In PopFront()\n";
 		//if the list is not empty
 		if (this->listSize > 0) {
-			std::cout << "List isn't empty\n";
 
 			//if this list only has one element to begin with remove it
 			//by making both front and back null
 			if (this->front == this->back) {
-
-				std::cout << "apparently this list is size 1\n";
 
 				this->front = this->back = 0;
 
@@ -357,10 +361,10 @@ public:
 			else {
 
 				//temporary pointer to hold the position of the old head of the list
-				A_SingleLinkedList::A_SingleLinkedList_Node *T_OldHead = this->front;
+				Node *T_OldHead = this->head;
 
 				//moving the list's head pointer to it's new head
-				this->front = this->front->nextNode;
+				this->head = this->head->nextNode;
 
 				//deleting the pointer to the value to the old head of the list
 				delete T_OldHead;
@@ -394,9 +398,9 @@ public:
 			else {
 
 				//holding the address of the old back of the list
-				A_SingleLinkedList::A_SingleLinkedList_Node *T_OldBack = this->back;
+				A_SingleLinkedList_Node T_OldBack = this->back;
 				//going to use our back pointer to traverse the list, to the node before it's old value
-				this->back = this->front;
+				this->back = this->head;
 				while (this->back->nextNode != T_OldBack) 
 					this->back = this->back->nextNode;
 
@@ -419,25 +423,18 @@ public:
 	*/
 	void Clear(A_SingleLinkedList_Node* _front) {
 
-		//call this function on the next node in the array
-		//until you've found the back
-		if (_front != this->back)
+		//if this list has ANY nodes
+		if (_front) {
+
+			//call this function on the next node in the array
 			this->Clear(_front->nextNode);
+			//delete each pointer
+			//recursion will cause each of these to resolve off the stack from back to front 
+			//and exit this method after removing _front itself
+			delete _front;
+			_front = 0;
 
-		//delete each pointer
-		//recursion will cause each of these to resolve off the stack from back to front 
-		//and exit this method after removing _front itself
-		delete _front;
-		_front = 0;
-
-	}
-
-	/**
-	destructor mirrors the Clear method
-	*/
-	~A_SingleLinkedList() {
-
-		this->Clear(this->front);
+		}
 
 	}
 
