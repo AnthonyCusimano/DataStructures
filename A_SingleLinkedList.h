@@ -5,6 +5,12 @@
 
 template <typename Tmplt>
 
+/************************
+************************
+*******UPLOAD***********
+************************
+*************************/
+
 class A_SingleLinkedList {
 
 private:
@@ -65,31 +71,18 @@ public:
 		}
 
 		/**
-		constructor given a node to refrence to begin with
-		*/
-		/*A_SingleLinkedList_Iterator(A_SingleLinkedList_Node* const _node) {
-
-			this->node = _node;
-
-		}*/
-
-		/**
 		destructor
 		*/
 		~A_SingleLinkedList_Iterator() {
-
 			//=D
-
 		}
 
 		/**
 		returns this iterator's node
 		*/
-		/*const A_SingleLinkedList_Node* getMyNode() {
-
+		A_SingleLinkedList_Node* getMyNode() {
 			return this->node;
-
-		}*/
+		}
 
 		/**
 		equality operator for checking if two iterators are pointing
@@ -118,7 +111,6 @@ public:
 		const A_SingleLinkedList_Iterator* operator ++() {
 
 			this->node = this->node->nextNode;
-
 			return this;
 
 		}
@@ -129,8 +121,6 @@ public:
 		const A_SingleLinkedList_Iterator* toBack(A_SingleLinkedList* const _list) {
 
 			this->node = _list->back;
-			//TODO
-			//requires test
 			return this;
 
 		}
@@ -141,8 +131,6 @@ public:
 		const A_SingleLinkedList_Iterator* toFront(A_SingleLinkedList* const _list) {
 
 			this->node = _list->front;
-			//TODO
-			//requires test
 			return this;
 
 		}
@@ -189,13 +177,22 @@ public:
 		searches for a particular value within the list
 		will not work for 0 values
 		*/
-		const A_SingleLinkedList_Iterator* Find(Tmplt& _value) {
+		const A_SingleLinkedList_Iterator* Find(Tmplt& const _value, A_SingleLinkedList* _list) {
+
+			std::cout << "Target value within Find is: " << _value << '\n';
 
 			//start at the front of this list
-			this->node = front;
+			this->node = _list->front;
 
-			while (this->node->nextNode.data != _value /**this null check may be incorrect*/&& this->node->nextNode != 0)
-				++this->node;
+			std::cout << "about to begin the while\n";
+
+			while (this->node->nextNode->myData != _value /**TODOthis null check may be incorrect*/&& this->node->nextNode != 0) {
+				std::cout << "current node value is: " << this->node->myData << '\n';
+
+				this->node = this->node->nextNode;
+				std::cout << "In the while\n";
+
+			}
 
 			//at the end of the while loop, we either went to the end of the list
 			return this;
@@ -217,18 +214,9 @@ public:
 	}
 
 	/**
-	destructor mirrors the Clear method
-	*/
-	~A_SingleLinkedList() {
-
-		this->Clear(this->front);
-
-	}
-
-	/**
 	returns true if the list is not empty
 	*/
-	bool IsEmpty() {
+	const bool IsEmpty() {
 
 		if (this->listSize == 0) return true;
 
@@ -249,11 +237,11 @@ public:
 	/**
 	returns a constant pointer to the first pointer in this list
 	*/
-	const Tmplt* getFront() {
+	const Tmplt& getFront() {
 
 		//if the list is not empty, it's fine to return the front
 		if (this->listSize > 0)
-			return &this->front->myData;
+			return this->front->myData;
 
 		//if the list is currently empty, return 0
 		return 0;
@@ -263,10 +251,10 @@ public:
 	/**
 	returns a constant pointer to the last pointer in this list
 	*/
-	const Tmplt* getBack() {
+	const Tmplt& getBack() {
 
 		if (this->listSize > 0)
-			return this->back;
+			return this->back->myData;
 
 		//if the list is currently empty, return 0
 		return 0;
@@ -311,7 +299,7 @@ public:
 	*/
 	void PushBack(Tmplt* const _newNode) {
 
-		std::cout << "I'm in PushBack, and _newNode is: " << *_newNode << '\n';
+		//std::cout << "I'm in PushBack, and _newNode is: " << _newNode << '\n';
 
 		//the new front of the list
 		A_SingleLinkedList_Node *T_NewBack = new A_SingleLinkedList_Node(_newNode);
@@ -346,12 +334,16 @@ public:
 	DO NOT check for an empty list before calling this method, it accounts for size 0
 	*/
 	void PopFront() {
+		std::cout << "In PopFront()\n";
 		//if the list is not empty
 		if (this->listSize > 0) {
+			std::cout << "List isn't empty\n";
 
 			//if this list only has one element to begin with remove it
 			//by making both front and back null
 			if (this->front == this->back) {
+
+				std::cout << "apparently this list is size 1\n";
 
 				this->front = this->back = 0;
 
@@ -361,10 +353,10 @@ public:
 			else {
 
 				//temporary pointer to hold the position of the old head of the list
-				Node *T_OldHead = this->head;
+				A_SingleLinkedList::A_SingleLinkedList_Node *T_OldHead = this->front;
 
 				//moving the list's head pointer to it's new head
-				this->head = this->head->nextNode;
+				this->front = this->front->nextNode;
 
 				//deleting the pointer to the value to the old head of the list
 				delete T_OldHead;
@@ -398,9 +390,9 @@ public:
 			else {
 
 				//holding the address of the old back of the list
-				A_SingleLinkedList_Node T_OldBack = this->back;
+				A_SingleLinkedList::A_SingleLinkedList_Node *T_OldBack = this->back;
 				//going to use our back pointer to traverse the list, to the node before it's old value
-				this->back = this->head;
+				this->back = this->front;
 				while (this->back->nextNode != T_OldBack) 
 					this->back = this->back->nextNode;
 
@@ -423,18 +415,25 @@ public:
 	*/
 	void Clear(A_SingleLinkedList_Node* _front) {
 
-		//if this list has ANY nodes
-		if (_front) {
-
-			//call this function on the next node in the array
+		//call this function on the next node in the array
+		//until you've found the back
+		if (_front != this->back)
 			this->Clear(_front->nextNode);
-			//delete each pointer
-			//recursion will cause each of these to resolve off the stack from back to front 
-			//and exit this method after removing _front itself
-			delete _front;
-			_front = 0;
 
-		}
+		//delete each pointer
+		//recursion will cause each of these to resolve off the stack from back to front 
+		//and exit this method after removing _front itself
+		delete _front;
+		_front = 0;
+
+	}
+
+	/**
+	destructor mirrors the Clear method
+	*/
+	~A_SingleLinkedList() {
+
+		this->Clear(this->front);
 
 	}
 
