@@ -173,6 +173,43 @@ public:
 
 		}*/
 
+		const A_SingleLinkedList_Iterator* Erase(A_SingleLinkedList* _list, A_SingleLinkedList_Node* _target) {
+
+			A_SingleLinkedList_node* T_placehold;
+
+			//checks for if the target is at the back or the front of the list
+			if (_target == _list->front) _list->PopFront;
+			else if (_target == _list->back) _list->PopBack();
+
+			else {
+
+				//go to the front of _list
+				this->node = _list->front;
+
+				//begin iterating
+				//go until we find the target or the end of the list
+				while (this->node != _target && this->node->nextNode != _list->back) {
+
+
+
+					this->node = this->node->nextNode;
+
+				}
+
+				//if we found the back
+
+				//if we found the target
+
+
+			}
+
+			//right?
+			delete T_placehold;
+
+			return this;
+
+		}
+
 		/**
 		searches for a particular value within the list
 		will not work for 0 values
