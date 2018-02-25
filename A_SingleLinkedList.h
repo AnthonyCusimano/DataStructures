@@ -147,31 +147,31 @@ public:
 		removes the node at _target
 		normal use is pass this as _pos
 		*/
-		const A_SingleLinkedList_Iterator* Erase(A_SingleLinkedList_Iterator* _pos, A_SingleLinkedList_Node* _target) {
+		/*const A_SingleLinkedList_Iterator* Erase(A_SingleLinkedList_Iterator* _pos, A_SingleLinkedList_Node* _target) {
 
 			//if the target is the front of the list, simply pop front
 			if (_pos->node == front)
-				popFront;
+				PopFront;
 
 			//likewise if it's the back of the list, simply pop back
 			else if (_pos->node == back)
-				popBack;
+				PopBack;
 
 			//any other case requires a bit more effort
 			else {
 
 				//iterate until we find the target
-				while (_pos->node.nextNode != _target) ++_pos;
+				while (_pos->node->nextNode != _target) ++_pos;
 
 				//link _pos to _target's next node, not _target
-				_pos->node->nextNode = _target->next;
+				_pos->node->nextNode = _target->nextNode;
 				//now we can safely delete target
 				_target = 0;
 				delete _target;
 
 			}
 
-		}
+		}*/
 
 		/**
 		searches for a particular value within the list
@@ -186,7 +186,7 @@ public:
 
 			std::cout << "about to begin the while\n";
 
-			while (this->node->nextNode->myData != _value /**TODOthis null check may be incorrect*/&& this->node->nextNode != 0) {
+			while (this->node->myData != _value && this->node->nextNode != 0) {
 				std::cout << "current node value is: " << this->node->myData << '\n';
 
 				this->node = this->node->nextNode;
