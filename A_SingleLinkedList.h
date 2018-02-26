@@ -5,12 +5,6 @@
 
 template <typename Tmplt>
 
-/************************
-************************
-*******UPLOAD***********
-************************
-*************************/
-
 class A_SingleLinkedList {
 
 private:
@@ -105,17 +99,6 @@ public:
 		}
 
 		/**
-		cycles to the next node in the list
-		SEE ALSO: GetNext
-		*/
-		const A_SingleLinkedList_Iterator* operator ++() {
-
-			this->node = this->node->nextNode;
-			return this;
-
-		}
-
-		/**
 		sets this iterator to the back node of _list
 		*/
 		const A_SingleLinkedList_Iterator* toBack(A_SingleLinkedList* const _list) {
@@ -144,53 +127,73 @@ public:
 		}
 
 		/**
-		removes the node at _target
-		normal use is pass this as _pos
+		searches _list for _target and removes it without breaking _list up in any way
+		WARNING: if _target is not found, this will likely crash
 		*/
-		/*const A_SingleLinkedList_Iterator* Erase(A_SingleLinkedList_Iterator* _pos, A_SingleLinkedList_Node* _target) {
+		const A_SingleLinkedList_Iterator* Erase(A_SingleLinkedList* _list, A_SingleLinkedList_Node* _target) {
 
-			//if the target is the front of the list, simply pop front
-			if (_pos->node == front)
-				PopFront;
+			A_SingleLinkedList_Node *T_Placehold;
 
-			//likewise if it's the back of the list, simply pop back
-			else if (_pos->node == back)
-				PopBack;
+			//checks for if the target is at the back or the front of the list
+			if (_target == _list->front) _list->PopFront();
+			else if (_target == _list->back) _list->PopBack();
 
-			//any other case requires a bit more effort
 			else {
 
-				//iterate until we find the target
-				while (_pos->node->nextNode != _target) ++_pos;
+				//go to the front of _list
+				this->node = _list->front;
 
-				//link _pos to _target's next node, not _target
-				_pos->node->nextNode = _target->nextNode;
-				//now we can safely delete target
-				_target = 0;
-				delete _target;
+				//begin iterating
+				//go until we find the target or the end of the list
+				//currently omitting back check because it should be handled above
+				while (this->node->nextNode != _target/* && this->node != _list->back*/) {
+
+					this->node = this->node->nextNode;
+
+				}
+				
+				//if we found the target
+				//this->node->nextNode IS the target
+				if (this->node->nextNode == _target) {
+
+					//set placehold to the node after the target
+					T_Placehold = this->node->nextNode->nextNode;
+
+					//delete the target
+					delete this->node->nextNode;
+
+					//rejoin the halves of the list
+					this->node->nextNode = T_Placehold;
+
+					//the list has lost a node
+					--_list->listSize;
+
+				}
+
+				//in any case, we will always return this iterator
+				//no case exists for if we found the back element of the list (and it isn't the target, as would be implied if we reached this code block)
+				//due to no action being necissary in that case
+				return this;
 
 			}
 
-		}*/
+			return this;
+
+		}
 
 		/**
 		searches for a particular value within the list
+		this will send the iterator to the start of _list as a part of the method
 		will not work for 0 values
 		*/
 		const A_SingleLinkedList_Iterator* Find(Tmplt& const _value, A_SingleLinkedList* _list) {
 
-			std::cout << "Target value within Find is: " << _value << '\n';
-
 			//start at the front of this list
 			this->node = _list->front;
 
-			std::cout << "about to begin the while\n";
-
-			while (this->node->myData != _value && this->node->nextNode != 0) {
-				std::cout << "current node value is: " << this->node->myData << '\n';
+			while (this->node->myData != _value && this->node != _list->back) {
 
 				this->node = this->node->nextNode;
-				std::cout << "In the while\n";
 
 			}
 
@@ -266,8 +269,6 @@ public:
 	*/
 	void PushFront(Tmplt* const _newNode) {
 
-		std::cout << "I'm in PushFront, and _newNode is: " << *_newNode << '\n';
-
 		//the new front of the list
 		A_SingleLinkedList_Node *T_NewFront = new A_SingleLinkedList_Node(_newNode);
 
@@ -334,20 +335,15 @@ public:
 	DO NOT check for an empty list before calling this method, it accounts for size 0
 	*/
 	void PopFront() {
-		std::cout << "In PopFront()\n";
+
 		//if the list is not empty
 		if (this->listSize > 0) {
-			std::cout << "List isn't empty\n";
 
 			//if this list only has one element to begin with remove it
 			//by making both front and back null
-			if (this->front == this->back) {
-
-				std::cout << "apparently this list is size 1\n";
-
+			//DEBUG does this leak without delete?
+			if (this->front == this->back)
 				this->front = this->back = 0;
-
-			}
 
 			//this will fire if the list size is greater than 1
 			else {
@@ -398,7 +394,6 @@ public:
 
 				//the new back is found, temp must be deleted
 				delete T_OldBack;
-				
 
 			}
 
@@ -438,5 +433,4 @@ public:
 	}
 
 };
-
 #endif
